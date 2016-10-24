@@ -29,11 +29,23 @@ class Target(Menu):
 
     def analyse_func_paths(self):
         addr = 0
+        f_addr = 0
         try:
-            addr = hex(int( raw_input("Please enter a function address in hex format: " ),16))  
-            print 'Start analyzing for %d ...' % (addr)
+            f_addr = int( raw_input("Please enter a function address in hex format: " ),16)
+            print 'Start analyzing for 0x%x ...' % (f_addr)
         except ValueError, e :
             print ("'%s' is not a valid function address" % e.args[0].split(": ")[1])
+            return True
+    
+        state = self._mProj.factory.blank_state(addr=f_addr)
+        print 'Processing...'
+
+        path = self._mProj.factory.path(state)
+        if path.addr != f_addr:
+            print 'for some reason, the path address is not correct.'
+
+
+
         return True
 
     def display_functions(self):
