@@ -1,0 +1,102 @@
+>>> state = P.factory.blank_state(addr=0x400626)
+>>> paths = P.factory.path(state)
+>>> paths.addr
+4195878L
+>>> hex(4195878)
+'0x400626'
+>>> hex(4195878L)
+>>> paths.step()
+[<Path with 1 runs (at 0x400647)>, <Path with 1 runs (at 0x40063f)>]
+>>> len(paths.step())
+2
+>>> b = paths.step()
+>>> print b
+[<Path with 1 runs (at 0x400647)>, <Path with 1 runs (at 0x40063f)>]
+>>> b1 = b[0]
+>>> b2 = b[1]
+>>> print b1
+<Path with 1 runs (at 0x400647)>
+>>> print b2
+<Path with 1 runs (at 0x40063f)>
+>>> print b1.state
+<simuvex.s_state.SimState object at 0x7ff07d493e60>
+>>> print b1.state.se
+<simuvex.plugins.solver.SimSolver object at 0x7ff07d3dee90>
+>>> print b1.state.se.constraints
+[<Bool reg_48_23_64[31:0] <=s reg_40_24_64[31:0]>]
+>>> print b2.state.se.constraints
+[<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>]
+>>> b1.step()
+[<Path with 2 runs (at 0x400658)>, <Path with 2 runs (at 0x400653)>]
+>>> b2.step()
+[<Path with 2 runs (at 0x40064d)>]
+>>> b11 = b1.step()[0]
+>>> b12 = b1.step()[1]
+>>> b21 = b2.step()[0]
+>>> b11.step()
+WARNING | 2016-10-24 22:12:40,804 | simuvex.s_run | Exit state has over 257 possible solutions. Likely unconstrained; skipping. <BV64 mem_7
+ffffffffff0000_25_64>
+[]
+>>> len(b11.step())
+0
+>>> len(b12.step())
+1
+>>> len(b21.step())
+2
+>>> b11.state.se.constraints
+[<Bool reg_48_23_64[31:0] <=s reg_40_24_64[31:0]>, <Bool reg_40_24_64[31:0] <=s 0x0>]
+>>> b12.state.se.constraints
+[<Bool reg_48_23_64[31:0] <=s reg_40_24_64[31:0]>, <Bool reg_40_24_64[31:0] >s 0x0>]
+>>> b121 = b12.step()[0]
+>>> len(b121.step())
+WARNING | 2016-10-24 22:15:24,001 | simuvex.s_run | Exit state has over 257 possible solutions. Likely unconstrained; skipping. <BV64 mem_7
+ffffffffff0000_26_64>
+0
+>>> b121.state.se.constraints
+[<Bool reg_48_23_64[31:0] <=s reg_40_24_64[31:0]>, <Bool reg_40_24_64[31:0] >s 0x0>]
+>>> print b21.step()
+[<Path with 3 runs (at 0x400658)>, <Path with 3 runs (at 0x400653)>]
+>>> print b21.state.se.constraints
+[<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>]
+>>>
+>>>
+>>> b211 = b21.step()[0]
+>>> b212 = b21.step()[1]
+>>> len(b211.step())
+WARNING | 2016-10-24 22:42:06,576 | simuvex.s_run | Exit state has over 257 possible solutions. Likely unconstrained; skipping. <BV64 mem_$
+ffffffffff0000_27_64>
+0
+>>> len(b212.step())
+1
+>>> b211.state.se.constraints
+[<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>, <Bool reg_48_23_64[31:0] <=s 0x0>]
+>>> b212.state.se.constraints
+[<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>, <Bool reg_48_23_64[31:0] >s 0x0>]
+>>> b212.step()[0]
+<Path with 4 runs (at 0x40065d)>
+>>> b212.step()[0].step()
+WARNING | 2016-10-24 22:46:16,476 | simuvex.s_run | Exit state has over 257 possible solutions. Likely unconstrained; skipping. <BV64 mem_7
+ffffffffff0000_28_64>
+[]
+>>> b2121[0]
+<Path with 4 runs (at 0x40065d)>
+>>> b2121 = b212.step()[0]
+>>> b2121.state.se.constraints
+[<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>, <Bool reg_48_23_64[31:0] >s 0x0>]
+>>>
+>>>
+>>>
+>>> print b2121.state.regs
+<simuvex.plugins.view.SimRegNameView object at 0x7ff07c914b50>
+>>> print b2121.state.regs.rax
+<BV64 0x0#32 .. reg_48_23_64[31:0]>
+>>> print b2121.state.regs.eax
+<BV32 reg_48_23_64[31:0]>
+>>>
+>>> print b2121.state.regs.rsp
+<BV64 0x7fffffffffefff8>
+>>> print b2121.state.regs.rbp
+<BV64 0x7fffffffffefff8>
+
+
+
