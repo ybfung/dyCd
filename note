@@ -99,4 +99,129 @@ ffffffffff0000_28_64>
 <BV64 0x7fffffffffefff8>
 
 
+>>> b11.state.se.constraints
+[<Bool reg_48_23_64[31:0] <=s reg_40_24_64[31:0]>, <Bool reg_40_24_64[31:0] <=s 0x0>]
+>>> b12.state.se.constraints
+[<Bool reg_48_23_64[31:0] <=s reg_40_24_64[31:0]>, <Bool reg_40_24_64[31:0] >s 0x0>]
+>>> b121.state.se.constraints
+[<Bool reg_48_23_64[31:0] <=s reg_40_24_64[31:0]>, <Bool reg_40_24_64[31:0] >s 0x0>]
+>>> b211.state.se.constraints
+[<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>, <Bool reg_48_23_64[31:0] <=s 0x0>]
+>>> b212.state.se.constraints
+[<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>, <Bool reg_48_23_64[31:0] >s 0x0>]
+>>> b2121.state.se.constraints
+[<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>, <Bool reg_48_23_64[31:0] >s 0x0>]
+
+>>> b12.state.se.constraints[0]._hash
+13507394722007808711L
+>>> b12.state.se.constraints[1]._hash
+11044449451750907551L
+>>> b121.state.se.constraints[1]._hash
+11044449451750907551L
+>>> b121.state.se.constraints[0]._hash
+13507394722007808711L
+>>> 
+>>> 
+>>> b11.state.se.constraints[0]._hash
+13507394722007808711L
+>>> b11.state.se.constraints[1]._hash
+12731784606904100826L
+>>> b11.state.se.constraints[1]._cache_key
+<Key Bool (reg_40_24_64[31:0] <=s 0x0)>
+>>> b11.state.se.constraints[0]._cache_key
+<Key Bool (reg_48_23_64[31:0] <=s reg_40_24_64[31:0])>
+
+
+
+
+>>> pg = p.factory.path_group(state)
+>>> pg.step()
+<PathGroup with 2 active>
+>>> pg.step()
+<PathGroup with 3 active>
+>>> pg.step()
+WARNING | 2016-10-27 22:53:49,015 | simuvex.s_run | Exit state has over 257 possible solutions. Likely unconstrained; skipping. <BV64 mem_7ffffffffff0000_33_64>
+<PathGroup with 1 deadended, 3 active>
+>>> len(pg.active)
+3
+>>> p1 = pg.active[0]
+>>> p1 = pg.active[1]
+>>> p2 = pg.active[1]
+>>> p1 = pg.active[0]
+>>> p2 = pg.active[1]
+>>> p3 = pg.active[2]
+>>> 
+>>> 
+>>> deadend = pg.deadended
+>>> print p1
+<Path with 3 runs (at 0x40065d)>
+print p2
+<Path with 3 runs (at 0x400658)>
+print p3
+<Path with 3 runs (at 0x400653)>
+>>> print deadend
+[<Path with 2 runs (at 0x400658)>]
+>>> 
+>>> 
+>>> p1_c = p1.state.se.constraints
+>>> p2_c = p2.state.se.constraints
+>>> p3_c = p3.state.se.constraints
+>>> deadend_c = deadend.state.se.constraints
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+AttributeError: 'list' object has no attribute 'state'
+>>> print deadend
+[<Path with 2 runs (at 0x400658)>]
+>>> deadend.state
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+AttributeError: 'list' object has no attribute 'state'
+>>> deadend_c = pg.deadended[0].state.se.constraints
+>>> pg.deadended
+[<Path with 2 runs (at 0x400658)>]
+>>> pg.deadended.step()
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+AttributeError: 'list' object has no attribute 'step'
+>>> print p1_c
+[<Bool reg_48_31_64[31:0] <=s reg_40_32_64[31:0]>, <Bool reg_40_32_64[31:0] >s 0x0>]
+>>> print p2_c
+[<Bool reg_48_31_64[31:0] >s reg_40_32_64[31:0]>, <Bool reg_48_31_64[31:0] <=s 0x0>]
+>>> print p3_c
+[<Bool reg_48_31_64[31:0] >s reg_40_32_64[31:0]>, <Bool reg_48_31_64[31:0] >s 0x0>]
+>>> print deadend_c
+[<Bool reg_48_31_64[31:0] <=s reg_40_32_64[31:0]>, <Bool reg_40_32_64[31:0] <=s 0x0>]
+>>> 
+>>> 
+>>> 
+>>> p1.state.se.any_int(p1_c[0].args[0])
+536870912L
+>>> p1.state.se.any_int(p1_c[0].args[2])
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+IndexError: tuple index out of range
+>>> p1.state.se.any_int(p1_c[0].args[1])
+536870912L
+>>> p1.state.se.any_int(p1_c[1].args[0])
+536870912L
+>>> 
+>>> p2.state.se.any_int(p2_c[0].args[0])
+0
+>>> p2.state.se.any_int(p2_c[0].args[1])
+4294967295L
+>>> p2.state.se.any_int(p2_c[1].args[0])
+0
+>>> p3.state.se.any_int(p3_c[0].args[0])
+2L
+>>> p3.state.se.any_int(p3_c[0].args[1])
+1L
+>>> deadend.state.se.any_int(deadend_c[0].args[0])
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+AttributeError: 'list' object has no attribute 'state'
+>>> pg.deadended[0].state.se.any_int(deadend_c[0].args[0])
+0
+>>> pg.deadended[0].state.se.any_int(deadend_c[0].args[1])
+0
+>>> 
 
