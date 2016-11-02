@@ -224,4 +224,5 @@ AttributeError: 'list' object has no attribute 'state'
 >>> pg.deadended[0].state.se.any_int(deadend_c[0].args[1])
 0
 >>> 
+In [24]: state = p.factory.call_state(0x400626,2,1)
 
