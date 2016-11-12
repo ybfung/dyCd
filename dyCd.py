@@ -44,8 +44,6 @@ class Target(Menu):
         if path.addr != f_addr:
             print 'for some reason, the path address is not correct.'
 
-
-
         return True
 
     def display_functions(self):

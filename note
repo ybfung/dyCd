@@ -1,3 +1,4 @@
+p = angr.Project('./test',load_options={'auto_load_libs': False})
 >>> state = P.factory.blank_state(addr=0x400626)
 >>> paths = P.factory.path(state)
 >>> paths.addr
