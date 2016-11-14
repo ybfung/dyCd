@@ -40,7 +40,8 @@ class Target(Menu):
         state = self._mProj.factory.blank_state(addr=f_addr)
         print 'Processing...'
 
-        path = self._mProj.factory.path(state)
+        #path = self._mProj.factory.path(state)
+        pg = self._mProj.factory.path_group(state)
         if path.addr != f_addr:
             print 'for some reason, the path address is not correct.'
 
