@@ -6,14 +6,19 @@ import sys
 
 class Menu():
     def __init__(self):
-        self.menuItems = {0: 'exit'}
+        self.menuItems = {}
+        self.add_item(0,'exit',self._exit)
 
-    def add_item(self,key,value):
-        self.menuItems[key] = value
+    def _exit(self):
+        return False
+
+    def add_item(self,key,value,func):
+        funcObj = (value,func)
+        self.menuItems[key] = funcObj 
 
     def get_choice(self):
         for f in self.menuItems:
-            print '%d : %s' % ( f, self.menuItems[f])
+            print '%d : %s' % ( f, self.menuItems[f][0])
         return int( raw_input("Please enter : " )) 
 
 
@@ -23,9 +28,10 @@ class Target(Menu):
         self._mProj = angr.Project(pBinary, load_options={'auto_load_libs': False})
         self._mCfg = self._mProj.analyses.CFG()
         self._mFuncList = dict(self._mProj.kb.functions)
+        self.paths = []
         Menu.__init__(self)
-        self.add_item(1,'list functions')
-        self.add_item(2,'analyse a function paths')
+        self.add_item(1,'list functions', self.display_functions)
+        self.add_item(2,'analyse a function paths',self.analyse_func_paths)
 
     def analyse_func_paths(self):
         addr = 0
@@ -40,8 +46,8 @@ class Target(Menu):
         state = self._mProj.factory.blank_state(addr=f_addr)
         print 'Processing...'
 
-        #path = self._mProj.factory.path(state)
-        pg = self._mProj.factory.path_group(state)
+        path = self._mProj.factory.path(state)
+        #pg = self._mProj.factory.path_group(state)
         if path.addr != f_addr:
             print 'for some reason, the path address is not correct.'
 
@@ -51,20 +57,14 @@ class Target(Menu):
         for f in self._mFuncList:
             s = self._mFuncList[f]
             print 'Address [%#x] \t%s ' % ( s.addr, s.name)
+        return True
 
     def execute_cmd(self,cmd):
-        if cmd == 0:
-            return False
-        if cmd == 1:
-            self.display_functions()
-            return True
-        if cmd == 2:
-            self.analyse_func_paths()
-            return True
+        if cmd in self.menuItems:
+            return self.menuItems[cmd][1]()
         else:
             print 'unsupport cmd '
             return True
-
 
 def show_menu(pTarget):
     is_valid = 0

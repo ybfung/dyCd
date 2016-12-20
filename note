@@ -1,4 +1,7 @@
 p = angr.Project('./test',load_options={'auto_load_libs': False})
+>>> cfg = p.analyses.CFG() 
+>>> funcs = dict(p.kb.functions)
+>>> print funcs
 >>> state = P.factory.blank_state(addr=0x400626)
 >>> paths = P.factory.path(state)
 >>> paths.addr
@@ -27,6 +30,8 @@ p = angr.Project('./test',load_options={'auto_load_libs': False})
 [<Bool reg_48_23_64[31:0] <=s reg_40_24_64[31:0]>]
 >>> print b2.state.se.constraints
 [<Bool reg_48_23_64[31:0] >s reg_40_24_64[31:0]>]
+# to get the AST OP from the constraints.
+>>> bi1.state.se.constraints.op
 >>> b1.step()
 [<Path with 2 runs (at 0x400658)>, <Path with 2 runs (at 0x400653)>]
 >>> b2.step()
