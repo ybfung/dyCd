@@ -7,9 +7,9 @@ import angr
 class Menu():
     def __init__(self):
         self.menuItems = {}
-        self.add_item(0, 'exit', self._exit)
+        self.add_item(0, 'exit', self.exit)
 
-    def _exit(self):
+    def exit(self):
         return False
 
     def add_item(self, key, value, func):
@@ -37,8 +37,12 @@ class Target(Menu):
         pp = p.step()
         if len(pp) == 0:
             self.paths.append(p)
+        else:
+            for i in pp:
+                self.findPaths(i)
 
     def analyse_func_paths(self):
+        del self.paths[:]
         f_addr = 0
         try:
             f_addr = int(raw_input("Please enter a function address in hex format: "), 16)
@@ -53,6 +57,9 @@ class Target(Menu):
         path = self._mProj.factory.path(state)
         if path.addr != f_addr:
             print 'for some reason, the path address is not correct.'
+
+        self.findPaths(path)
+        print 'Number of paths found: %d' % len(self.paths)
 
         return True
 
