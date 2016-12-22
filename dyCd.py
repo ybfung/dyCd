@@ -32,14 +32,15 @@ class Target(Menu):
         Menu.__init__(self)
         self.add_item(1, 'list functions', self.display_functions)
         self.add_item(2, 'analyse a function paths', self.analyse_func_paths)
+        self.add_item(3, 'compare two functions', self.analyse_func_paths)
 
-    def findPaths(self, p):
+    def _findPaths_(self, p):
         pp = p.step()
         if len(pp) == 0:
             self.paths.append(p)
         else:
             for i in pp:
-                self.findPaths(i)
+                self._findPaths_(i)
 
     def analyse_func_paths(self):
         del self.paths[:]
@@ -58,9 +59,14 @@ class Target(Menu):
         if path.addr != f_addr:
             print 'for some reason, the path address is not correct.'
 
-        self.findPaths(path)
+        self._findPaths_(path)
         print 'Number of paths found: %d' % len(self.paths)
+        for s in self.paths:
+            print 'Constrant: %s' % s.state.se.constraints
 
+        return True
+
+    def compare_two_functins(self):
         return True
 
     def display_functions(self):
