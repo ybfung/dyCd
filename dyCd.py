@@ -3,27 +3,51 @@
 import sys
 import angr
 
+def exit_false():
+    """Simple exit function returning False"""
+    return False
 
-class Menu():
+
+class Menu(object):
+    """Class for showing the menu item"""
     def __init__(self):
-        self.menuItems = {}
-        self.add_item(0, 'exit', self.exit)
-
-    def exit(self):
-        return False
+        self.m_menuitems = {}
+        self.add_item(0, 'exit', exit_false)
 
     def add_item(self, key, value, func):
-        funcObj = (value, func)
-        self.menuItems[key] = funcObj
+        """Method to add a menu item. to the Dictionary"""
+        l_func_obj = (value, func)
+        self.m_menuitems[key] = l_func_obj
 
     def get_choice(self):
-        for f in self.menuItems:
-            print '%d : %s' % (f, self.menuItems[f][0])
+        """Method to get the user input from the list of menu items"""
+        for item in self.m_menuitems:
+            print '%d : %s' % (item, self.m_menuitems[item][0])
         return int(raw_input("Please enter : "))
 
 
+class FuncPaths(object):  # pylint: disable=too-few-public-methods
+    """Class for Function Paths"""
+    def __init__(self):
+        self.m_paths = []
+
+    def find_paths(self, path):
+        """Method to recursively identify paths"""
+        l_path = path.step()
+        if len(l_path) == 0:
+            self.m_paths.append(path)
+        else:
+            for pth in l_path:
+                self.find_paths(pth)
+
+    def get_paths(self):
+        """Method to get analysed paths"""
+        return self.m_paths
+
+
 class Target(Menu):
-    def __init__(self,pBinary):
+    """Main Class for binary function paths analysis"""
+    def __init__(self, pBinary):
         self._mBinary = pBinary
         self._mProj = angr.Project(pBinary, load_options={'auto_load_libs': False})
         self._mCfg = self._mProj.analyses.CFG()
@@ -59,6 +83,8 @@ class Target(Menu):
         if path.addr != f_addr:
             print 'for some reason, the path address is not correct.'
 
+        paths_obj = FuncPaths()
+
         self._findPaths_(path)
         print 'Number of paths found: %d' % len(self.paths)
         for s in self.paths:
@@ -76,8 +102,8 @@ class Target(Menu):
         return True
 
     def execute_cmd(self, cmd):
-        if cmd in self.menuItems:
-            return self.menuItems[cmd][1]()
+        if cmd in self.m_menuitems:
+            return self.m_menuitems[cmd][1]()
         else:
             print 'unsupport cmd '
             return True
