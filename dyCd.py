@@ -58,22 +58,15 @@ class Target(Menu):
         self.add_item(2, 'analyse a function paths', self.analyse_func_paths)
         self.add_item(3, 'compare two functions', self.analyse_func_paths)
 
-    def _findPaths_(self, p):
-        pp = p.step()
-        if len(pp) == 0:
-            self.paths.append(p)
-        else:
-            for i in pp:
-                self._findPaths_(i)
-
     def analyse_func_paths(self):
+        """Perform a path analysis for a function address"""
         del self.paths[:]
         f_addr = 0
         try:
             f_addr = int(raw_input("Please enter a function address in hex format: "), 16)
             print 'Start analyzing for 0x%x ...' % (f_addr)
-        except ValueError, e:
-            print "'%s' is not a valid function address" % e.args[0].split(": ")[1]
+        except ValueError, ex:
+            print "'%s' is not a valid function address" % ex.args[0].split(": ")[1]
             return True
 
         state = self._mProj.factory.blank_state(addr=f_addr)
@@ -84,11 +77,11 @@ class Target(Menu):
             print 'for some reason, the path address is not correct.'
 
         paths_obj = FuncPaths()
-
-        self._findPaths_(path)
-        print 'Number of paths found: %d' % len(self.paths)
-        for s in self.paths:
-            print 'Constrant: %s' % s.state.se.constraints
+        paths_obj.find_paths(path)
+        found_paths = paths_obj.get_paths()
+        print 'Number of paths found: %d' % len(found_paths)
+        for pths in found_paths:
+            print 'Constrant: %s' % pths.state.se.constraints
 
         return True
 
