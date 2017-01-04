@@ -56,7 +56,7 @@ class Target(Menu):
         Menu.__init__(self)
         self.add_item(1, 'list functions', self.display_functions)
         self.add_item(2, 'analyse a function paths', self.analyse_func_paths)
-        self.add_item(3, 'compare two functions', self.analyse_func_paths)
+        self.add_item(3, 'compare two functions', self.compare_two_functins)
 
     def analyse_func_paths(self):
         """Perform a path analysis for a function address"""
@@ -86,12 +86,51 @@ class Target(Menu):
         return True
 
     def compare_two_functins(self):
+        """Analyse two functions based on their paths similarities"""
+        f_addr_a = 0
+        f_addr_b = 0
+        try:
+            f_addr_a = int(raw_input("Please enter first function address in hex format: "), 16)
+            #print 'Start analyzing for 0x%x ...' % (f_addr)
+        except ValueError, ex:
+            print "'%s' is not a valid function address" % ex.args[0].split(": ")[1]
+            return True
+
+        try:
+            f_addr_b = int(raw_input("Please enter second function address in hex format: "), 16)
+            #print 'Start analyzing for 0x%x ...' % (f_addr)
+        except ValueError, ex:
+            print "'%s' is not a valid function address" % ex.args[0].split(": ")[1]
+            return True
+
+        state_a = self._mProj.factory.blank_state(addr=f_addr_a)
+        print 'Processing for 0x%x...' % (f_addr_a)
+        path_a = self._mProj.factory.path(state_a)
+
+        paths_obj_a = FuncPaths()
+        paths_obj_a.find_paths(path_a)
+        found_paths_a = paths_obj_a.get_paths()
+        print 'Number of paths found : %d' % len(found_paths_a)
+        for pths_a in found_paths_a:
+            print 'Constrant: %s' % pths_a.state.se.constraints
+
+        state_b = self._mProj.factory.blank_state(addr=f_addr_b)
+        print 'Processing for 0x%x...' % (f_addr_b)
+        path_b = self._mProj.factory.path(state_b)
+        paths_obj_b = FuncPaths()
+        paths_obj_b.find_paths(path_b)
+        found_paths_b = paths_obj_b.get_paths()
+        print 'Number of paths found: %d' % len(found_paths_b)
+        for pths_b in found_paths_b:
+            print 'Constrant: %s' % pths_b.state.se.constraints
+
         return True
 
     def display_functions(self):
-        for f in self._mFuncList:
-            s = self._mFuncList[f]
-            print 'Address [%#x] \t%s ' % (s.addr, s.name)
+        """List functions"""
+        for func in self._mFuncList:
+            func_obj = self._mFuncList[func]
+            print 'Address [%#x] \t%s ' % (func_obj.addr, func_obj.name)
         return True
 
     def execute_cmd(self, cmd):
