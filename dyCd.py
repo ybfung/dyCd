@@ -40,9 +40,19 @@ class FuncPaths(object):  # pylint: disable=too-few-public-methods
             for pth in l_path:
                 self.find_paths(pth)
 
+    def analyse_paths(self, path):
+        """remove any deadpaths"""
+
     def get_paths(self):
         """Method to get analysed paths"""
         return self.m_paths
+
+    def get_constraints(self):
+        """Get a list of paths' constraints"""
+        l_constraints = []
+        for pth in self.m_paths:
+            l_constraints.append(pth.state.se.constraints)
+        return l_constraints
 
 
 class Target(Menu):

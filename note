@@ -1,9 +1,30 @@
 p = angr.Project('./test',load_options={'auto_load_libs': False})
->>> cfg = p.analyses.CFG() 
->>> funcs = dict(p.kb.functions)
->>> print funcs
->>> state = P.factory.blank_state(addr=0x400626)
->>> paths = P.factory.path(state)
+cfg = p.analyses.CFG() 
+funcs = dict(p.kb.functions)
+
+print funcs
+
+def find_paths(in_path,out_path):
+        t_path = path.step()
+        if len(t_path) == 0:
+            out_path.append(in_path)
+        else:
+            for pth in t_path:
+                find_paths(pth,out_path)
+
+state = p.factory.blank_state(addr=0x400790)
+paths = p.factory.path(state)
+
+find_paths(paths,out_paths)
+
+def get_constraints(paths):
+    l_const = []
+    for pth in paths:
+        l_const.append(pth.state.se.constraints) 
+    return l_const
+
+>>> p1.state.se.any_int(p1_c[0].args[0])
+
 >>> paths.addr
 4195878L
 >>> hex(4195878)
